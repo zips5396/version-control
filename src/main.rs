@@ -3,19 +3,26 @@ extern crate git2;
 use clap::{App, Arg};
 use git2::{Commit, Repository};
 
-// This function creates a new commit in the given repository with the given message.
+/*
+This function creates a new commit in the given repository with the given message.
 
-// It does this by:
-//  - getting the signature for the current user
-//  - writing the current index (a list of file changes to be committed) to a tree object
-//  - creating a commit object with the tree, signature, and message
-//  - returning the created commit object
+It does this by:
+  - getting the signature for the current user
+  - writing the current index (a list of file changes to be committed) to a tree object
+  - creating a commit object with the tree, signature, and message
+  - returning the created commit object
+*/
 fn commit<'a>(repo: &'a Repository, message: &str) -> Result<Commit<'a>, git2::Error> {
-    let signature = repo.signature()?; // gets the signature for the current user
-    let tree_id = repo.index()?.write_tree()?; // writes the current index to a tree object
-    let tree = repo.find_tree(tree_id)?; // gets the tree object
-    let oid = repo.commit(Some("HEAD"), &signature, &signature, message, &tree, &[])?; // creates a commit object with the tree, signature, and message
-    repo.find_commit(oid) // returns the created commit object
+    // Gets the signature for the current user.
+    let signature = repo.signature()?;
+    // Writes the current index to a tree object.
+    let tree_id = repo.index()?.write_tree()?;
+    // Gets the tree object
+    let tree = repo.find_tree(tree_id)?;
+    // Creates a commit object with the tree, signature, and message.
+    let oid = repo.commit(Some("HEAD"), &signature, &signature, message, &tree, &[])?;
+    // Returns the created commit object.
+    repo.find_commit(oid)
 }
 
 fn main() -> Result<(), git2::Error> {
